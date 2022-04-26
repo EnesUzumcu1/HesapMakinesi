@@ -5,16 +5,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -108,7 +109,13 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         binding.toolbar.coinAdi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialogAlertCoin();
+                if(coinerArray.size()>0){
+                    showDialogAlertCoin();
+                }else{
+                    //eger liste yüklenmezse tekrar denenmesi icin fonksiyon cagiriliyor.
+                    Toast.makeText(getApplicationContext(),"Tekrar deneyin!",Toast.LENGTH_SHORT).show();
+                    getData();
+                }
             }
         });
 
@@ -119,7 +126,6 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
                 yuzdeHesapla();
             }
         });
-
 
     }
 
@@ -188,6 +194,10 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         dialogCoin = new Dialog(this);
 
         binding.toolbar.buttonYenile.setEnabled(false);
+
+        if(!isConnected()) {
+            Toast.makeText(getApplicationContext(), "İnternet bağlantısı bulunamadı!", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -326,7 +336,6 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         // shared preferences.
         SharedPreferences sharedPreferences = getSharedPreferences(coinYukle, MODE_PRIVATE);
 
-
         // creating a variable for editor to
         // store data in shared preferences.
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -427,7 +436,7 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("my-api", "went Wrong");
+
             }
         });
         requestQueue.add(jsonArrayRequest);
@@ -435,44 +444,49 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
 
     public void yuzdeHesapla() {
         String anlikDegerstr = binding.toolbar.coinFiyati.getText().toString();
-        String[] str1 = anlikDegerstr.split(" ");
-        double anlikDeger = Double.parseDouble(str1[0]);
-        double karliOrtalama = 0;
-        double karsizOrtalama = 0;
-        double netHamKar = 0;
-        double netKarDahilKar = 0;
-        float karliArtisOrani = 0;
-        float karsizArtisOrani = 0;
-        double toplamPara = Double.parseDouble(binding.textViewToplamPara.getText().toString());
-        if (binding.textViewYeniOrtalama.getText().toString().equals("") || Double.parseDouble(binding.textViewYeniOrtalama.getText().toString()) == 0) {
+        if(!anlikDegerstr.equals("")){
+            String[] str1 = anlikDegerstr.split(" ");
+            double anlikDeger = Double.parseDouble(str1[0]);
+            double karliOrtalama = 0;
+            double karsizOrtalama = 0;
+            double netHamKar = 0;
+            double netKarDahilKar = 0;
+            float karliArtisOrani = 0;
+            float karsizArtisOrani = 0;
+            double toplamPara = Double.parseDouble(binding.textViewToplamPara.getText().toString());
+            if (binding.textViewYeniOrtalama.getText().toString().equals("") || Double.parseDouble(binding.textViewYeniOrtalama.getText().toString()) == 0) {
 
-        } else {
-            karliOrtalama = Double.parseDouble(binding.textViewYeniOrtalama.getText().toString());
-            karliArtisOrani = (float) (((anlikDeger - karliOrtalama) / karliOrtalama) * 100);
-            netKarDahilKar = (toplamPara * karliArtisOrani) / 100;
-        }
-        if (Double.parseDouble(binding.textViewOrtalama.getText().toString()) == 0) {
+            } else {
+                karliOrtalama = Double.parseDouble(binding.textViewYeniOrtalama.getText().toString());
+                karliArtisOrani = (float) (((anlikDeger - karliOrtalama) / karliOrtalama) * 100);
+                netKarDahilKar = (toplamPara * karliArtisOrani) / 100;
+            }
+            if (Double.parseDouble(binding.textViewOrtalama.getText().toString()) == 0) {
 
-        } else {
-            karsizOrtalama = Double.parseDouble(binding.textViewOrtalama.getText().toString());
-            karsizArtisOrani = (float) (((anlikDeger - karsizOrtalama) / karsizOrtalama) * 100);
-            netHamKar = (toplamPara * karsizArtisOrani) / 100;
-        }
+            } else {
+                karsizOrtalama = Double.parseDouble(binding.textViewOrtalama.getText().toString());
+                karsizArtisOrani = (float) (((anlikDeger - karsizOrtalama) / karsizOrtalama) * 100);
+                netHamKar = (toplamPara * karsizArtisOrani) / 100;
+            }
 
-        binding.textViewKarYuzde.setText("% " + decimalFormatYuzde.format(karsizArtisOrani) + " (" + decimalFormatYuzde.format(netHamKar) + ")");
-        binding.textViewKarYuzdeKarDahil.setText("% " + decimalFormatYuzde.format(karliArtisOrani) + " (" + decimalFormatYuzde.format(netKarDahilKar) + ")");
+            binding.textViewKarYuzde.setText("% " + decimalFormatYuzde.format(karsizArtisOrani) + " (" + decimalFormatYuzde.format(netHamKar) + ")");
+            binding.textViewKarYuzdeKarDahil.setText("% " + decimalFormatYuzde.format(karliArtisOrani) + " (" + decimalFormatYuzde.format(netKarDahilKar) + ")");
 
-        if (karsizArtisOrani > 0.0) {
-            binding.textViewKarYuzde.setTextColor(Color.GREEN);
-        } else {
-            binding.textViewKarYuzde.setTextColor(Color.RED);
+            if (karsizArtisOrani > 0.0) {
+                binding.textViewKarYuzde.setTextColor(Color.GREEN);
+            } else {
+                binding.textViewKarYuzde.setTextColor(Color.RED);
+            }
+            if (karliArtisOrani > 0.0) {
+                binding.textViewKarYuzdeKarDahil.setTextColor(Color.GREEN);
+            } else {
+                binding.textViewKarYuzdeKarDahil.setTextColor(Color.RED);
+            }
+            anlikBakiyeHesaplama(str1);
         }
-        if (karliArtisOrani > 0.0) {
-            binding.textViewKarYuzdeKarDahil.setTextColor(Color.GREEN);
-        } else {
-            binding.textViewKarYuzdeKarDahil.setTextColor(Color.RED);
+        else{
+            Toast.makeText(getApplicationContext(),"Kâr oranı hesaplanması için internet bağlantısı gerekir",Toast.LENGTH_SHORT).show();
         }
-        anlikBakiyeHesaplama(str1);
     }
 
     public void anlikBakiyeHesaplama(String[] guncelFiyatstr) {
@@ -489,6 +503,21 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
 
         binding.textViewKarliBakiye.setText(decimalFormat.format(karliAdet * guncelFiyat));
         binding.textViewKarsizBakiye.setText(decimalFormat.format(karsizAdet * guncelFiyat));
+    }
+
+    boolean isConnected(){
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if(networkInfo!=null){
+            if(networkInfo.isConnected())
+                return true;
+            else
+                return false;
+        }else
+            return false;
+
     }
 
 }
