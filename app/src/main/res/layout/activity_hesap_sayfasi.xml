@@ -52,14 +52,6 @@
         android:text="Ekle" />
 
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/buttonEkle"
-        android:layout_alignBottom="@id/buttonEkle"
-        android:text="Kaydet" />
-
     <LinearLayout
         android:id="@+id/LinearLayoutisim"
         android:layout_width="match_parent"

@@ -105,19 +105,6 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
             }
         });
 
-        binding.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    Toast.makeText(getApplicationContext(), "Kaydetme AÇIK. ", Toast.LENGTH_SHORT).show();
-                    saveData(coinYukle);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Kaydetme KAPALI. ", Toast.LENGTH_SHORT).show();
-                    saveData(coinYukle);
-                }
-            }
-        });
-
         binding.toolbar.coinAdi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,6 +140,9 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
 
     public void yeniOrtalamaHesapla(Double yeniAdet) {
         double fark = yeniAdet - Double.parseDouble(binding.textViewAdet.getText().toString());
+        if(yeniAdet == 0) {
+            fark = 0;
+        }
         binding.textViewYeniAdet.setText(decimalFormat.format(yeniAdet) + " (" + decimalFormat.format(fark) + ")");
         if (yeniAdet > 0) {
             double yeniOrt = Double.parseDouble(binding.textViewToplamPara.getText().toString()) / yeniAdet;
@@ -233,12 +223,11 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
                     if (yeniadetsayisi != 0) {
                         double yeniAdet = Double.parseDouble(bindingDialogBox.textViewYeniAdetDialogBox.getText().toString());
                         yeniOrtalamaHesapla(yeniAdet);
-                        saveData(coinYukle);
                         yuzdeHesapla();
                     } else {
                         yeniOrtalamaSifirlayici();
                     }
-
+                    saveData(coinYukle);
                 }
                 dialog.dismiss();
             }
@@ -301,41 +290,34 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         // shared preferences.
         SharedPreferences sharedPreferences = getSharedPreferences(coinYukle, MODE_PRIVATE);
 
-        boolean b = sharedPreferences.getBoolean("kaydet", false);
-        if (b) {
+        // creating a variable for gson.
+        Gson gson = new Gson();
 
-            // creating a variable for gson.
-            Gson gson = new Gson();
+        // below line is to get to string present from our
+        // shared prefs if not present setting it as null.
+        String json = sharedPreferences.getString("hesaplar", null);
 
-            // below line is to get to string present from our
-            // shared prefs if not present setting it as null.
-            String json = sharedPreferences.getString("hesaplar", null);
+        // below line is to get the type of our array list.
+        Type type = new TypeToken<ArrayList<Hesap>>() {
+        }.getType();
 
-            // below line is to get the type of our array list.
-            Type type = new TypeToken<ArrayList<Hesap>>() {
-            }.getType();
+        // in below line we are getting data from gson
+        // and saving it to our array list
+        hesapArrayList = gson.fromJson(json, type);
 
-            // in below line we are getting data from gson
-            // and saving it to our array list
-            hesapArrayList = gson.fromJson(json, type);
-
-            // checking below if the array list is empty or not
-            if (hesapArrayList == null) {
-                // if the array list is empty
-                // creating a new array list.
-                hesapArrayList = new ArrayList<>();
-            }
-            String yeniOrt = sharedPreferences.getString("yeniAdet", "Yeni adet için tıkla");
-            binding.textViewYeniAdet.setText(yeniOrt);
-
-            String coinAdi = sharedPreferences.getString("coinAdi", "BTCUSDT");
-            getDataKaydedilenCoin(coinAdi);
-            mevcutCoinAdi = coinAdi;
-        } else {
-            mevcutCoinAdi = "BTCUSDT";
-            getDataKaydedilenCoin(mevcutCoinAdi);
+        // checking below if the array list is empty or not
+        if (hesapArrayList == null) {
+            // if the array list is empty
+            // creating a new array list.
+            hesapArrayList = new ArrayList<>();
         }
-        binding.checkBox.setChecked(b);
+        String yeniOrt = sharedPreferences.getString("yeniAdet", "Yeni adet için tıkla");
+        binding.textViewYeniAdet.setText(yeniOrt);
+
+        String coinAdi = sharedPreferences.getString("coinAdi", "BTCUSDT");
+        getDataKaydedilenCoin(coinAdi);
+        mevcutCoinAdi = coinAdi;
+
     }
 
     private void saveData(String coinYukle) {
@@ -359,13 +341,10 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         // prefs in the form of string.
         editor.putString("hesaplar", json);
 
-        editor.putBoolean("kaydet", binding.checkBox.isChecked());
-
         editor.putString("yeniAdet", binding.textViewYeniAdet.getText().toString());
         if (!binding.toolbar.coinAdi.getText().toString().equals("")) {
             editor.putString("coinAdi", binding.toolbar.coinAdi.getText().toString());
         }
-
 
         // below line is to apply changes
         // and save data in shared prefs.
@@ -389,9 +368,9 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         binding.toolbar.coinAdi.setText(coinerArray.get(position).getIsim());
         binding.toolbar.coinFiyati.setText(decimalFormat.format(coinerArray.get(position).getFiyat()) + " $");
         mevcutCoinAdi = coinerArray.get(position).getIsim();
-        if (binding.checkBox.isChecked()) {
-            saveData(coinYukle);
-        }
+
+        saveData(coinYukle);
+
         adapterCoinler.getFilter().filter("");
         yuzdeHesapla();
         dialogCoin.dismiss();
@@ -500,7 +479,7 @@ public class HesapSayfasi extends AppCompatActivity implements ClickListener {
         double karsizAdet = Double.parseDouble(binding.textViewAdet.getText().toString());
         double karliAdet = 0;
 
-        if (!binding.textViewYeniAdet.getText().toString().equals("")) {
+        if (!binding.textViewYeniAdet.getText().toString().equals("") && !binding.textViewYeniAdet.getText().toString().equals("Yeni adet için tıkla")) {
             String str = binding.textViewYeniAdet.getText().toString();
             String[] strings = str.split(" ");
             karliAdet = Double.parseDouble(strings[0].trim());
