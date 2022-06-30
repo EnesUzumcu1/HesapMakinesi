@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#000000"
+    android:background="@drawable/background_list_item"
     android:elevation="4dp"
     android:theme="@style/AppTheme">
 
@@ -15,28 +15,21 @@
             android:id="@+id/coinAdi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/coinFiyati"
             android:textColor="@color/white"
-            android:textSize="15sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/coinFiyati"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@id/coinAdi"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
-
-        <Button
-            android:id="@+id/buttonYenile"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/coinAdi"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="10dp"
-            android:foreground="@android:drawable/stat_notify_sync_noanim" />
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
     </RelativeLayout>
 

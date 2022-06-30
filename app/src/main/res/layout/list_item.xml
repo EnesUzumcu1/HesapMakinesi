@@ -59,7 +59,7 @@
 
     </LinearLayout>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonSil"
         android:layout_width="25dp"
         android:layout_height="wrap_content"
