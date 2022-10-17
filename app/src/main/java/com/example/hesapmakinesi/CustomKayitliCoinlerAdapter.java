@@ -17,7 +17,6 @@ public class CustomKayitliCoinlerAdapter extends RecyclerView.Adapter<CustomKayi
 
     ArrayList<KayitliCoinler> kayitliCoinlerArrayList;
     Context context;
-    String id;
     ClickListenerKayitliCoinler listener;
 
     public CustomKayitliCoinlerAdapter (ArrayList<KayitliCoinler> kayitliCoinlerArrayList,Context context, ClickListenerKayitliCoinler listener){

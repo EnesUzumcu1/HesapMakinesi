@@ -61,11 +61,11 @@ public class CustomAdapterCoinler extends RecyclerView.Adapter<CustomAdapterCoin
         holder.binding.textView.setText(position + 1 + ")");
 
         holder.binding.textViewCoinAdi.setText(isim);
-        holder.binding.textViewCoinFiyati.setText(df.format(fiyat)+" $");
+        holder.binding.textViewCoinFiyati.setText(String.format("%s $", df.format(fiyat)));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.OnItemClickedCoinlerList(coinlerArrayList.get(position),position);
+                listener.OnItemClickedCoinlerList(coinlerArrayList.get(position));
             }
         });
 

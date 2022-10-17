@@ -62,7 +62,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.binding.buttonSil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.OnItemClicked(hesapArrayList.get(position),position);
+                listener.OnItemClicked(position);
             }
         });
 

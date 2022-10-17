@@ -3,7 +3,6 @@ package com.example.hesapmakinesi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -66,7 +65,7 @@ public class FragmentAlis extends Fragment implements ClickListener {
     String coinYukle;
     static double toplamHamPara;
 
-    static ArrayList<Coinler> coinerArray;
+    ArrayList<Coinler> coinlerArray;
 
     Handler handler;
     Runnable runnable;
@@ -128,7 +127,7 @@ public class FragmentAlis extends Fragment implements ClickListener {
         binding.toolbar.coinAdi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (coinerArray.size() > 0) {
+                if (coinlerArray.size() > 0) {
                     showDialogAlertCoin();
                 } else {
                     //eger liste yüklenmezse tekrar denenmesi icin fonksiyon cagiriliyor.
@@ -172,7 +171,7 @@ public class FragmentAlis extends Fragment implements ClickListener {
         if (yeniAdet == 0) {
             fark = 0;
         }
-        binding.textViewYeniAdet.setText(decimalFormat.format(yeniAdet) + " (" + decimalFormat.format(fark) + ")");
+        binding.textViewYeniAdet.setText(String.format("%s (%s)", decimalFormat.format(yeniAdet), decimalFormat.format(fark)));
         if (yeniAdet > 0) {
             double yeniOrt = Double.parseDouble(binding.textViewToplamPara.getText().toString()) / yeniAdet;
             binding.textViewYeniOrtalama.setText(decimalFormat.format(yeniOrt));
@@ -197,7 +196,7 @@ public class FragmentAlis extends Fragment implements ClickListener {
         binding.recyclerview.setLayoutManager(manager);
 
         hesapArrayList = new ArrayList<>();
-        coinerArray = new ArrayList<Coinler>();
+        coinlerArray = new ArrayList<Coinler>();
 
         //Double ifadeler için ondalık ayırıcının nokta olması gerekiyor. Bunu sabit olarak uygulamak için kural eklendi
         Locale currentLocale = Locale.getDefault();
@@ -278,8 +277,8 @@ public class FragmentAlis extends Fragment implements ClickListener {
         CustomListBinding listBinding = CustomListBinding.inflate(getLayoutInflater());
         dialogCoin.setContentView(listBinding.getRoot());
 
-        Collections.sort(coinerArray, Coinler.presidentComparatorAZ);
-        adapterCoinler = new CustomAdapterCoinler(coinerArray, getContext(), this);
+        Collections.sort(coinlerArray, Coinler.presidentComparatorAZ);
+        adapterCoinler = new CustomAdapterCoinler(coinlerArray, getContext(), this);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         listBinding.recyclerViewCoinler.setHasFixedSize(true);
         listBinding.recyclerViewCoinler.setLayoutManager(manager);
@@ -380,7 +379,7 @@ public class FragmentAlis extends Fragment implements ClickListener {
     }
 
     @Override
-    public void OnItemClicked(Hesap hesap, int position) {
+    public void OnItemClicked(int position) {
         adapter.notifyItemRemoved(position);
         adapter.hesapArrayList.remove(position);
         ortalamaHesapla();
@@ -392,10 +391,10 @@ public class FragmentAlis extends Fragment implements ClickListener {
     }
 
     @Override
-    public void OnItemClickedCoinlerList(Coinler coinler, int position) {
-        binding.toolbar.coinAdi.setText(coinerArray.get(position).getIsim());
-        binding.toolbar.coinFiyati.setText(decimalFormat.format(coinerArray.get(position).getFiyat()) + " $");
-        mevcutCoinAdi = coinerArray.get(position).getIsim();
+    public void OnItemClickedCoinlerList(Coinler coinler) {
+        binding.toolbar.coinAdi.setText(coinler.getIsim());
+        binding.toolbar.coinFiyati.setText(String.format("%s $", decimalFormat.format(coinler.getFiyat())));
+        mevcutCoinAdi = coinler.getIsim();
 
         saveData(coinYukle);
 
@@ -437,13 +436,13 @@ public class FragmentAlis extends Fragment implements ClickListener {
             @Override
             public void onResponse(JSONArray response) {
                 try {
-                    coinerArray.clear();
+                    coinlerArray.clear();
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
 
                         if (jsonObject.getString("symbol").contains("USDT")) {
                             Coinler coin = new Coinler(jsonObject.getString("symbol"), Double.parseDouble(jsonObject.getString("price")));
-                            coinerArray.add(coin);
+                            coinlerArray.add(coin);
                         }
                     }
                 } catch (Exception e) {
@@ -486,8 +485,8 @@ public class FragmentAlis extends Fragment implements ClickListener {
                 netHamKar = (toplamPara * karsizArtisOrani) / 100;
             }
 
-            binding.textViewKarYuzde.setText("% " + decimalFormatYuzde.format(karsizArtisOrani) + " (" + decimalFormatYuzde.format(netHamKar) + ")");
-            binding.textViewKarYuzdeKarDahil.setText("% " + decimalFormatYuzde.format(karliArtisOrani) + " (" + decimalFormatYuzde.format(netKarDahilKar) + ")");
+            binding.textViewKarYuzde.setText(String.format("%% %s (%s)", decimalFormatYuzde.format(karsizArtisOrani), decimalFormatYuzde.format(netHamKar)));
+            binding.textViewKarYuzdeKarDahil.setText(String.format("%% %s (%s)", decimalFormatYuzde.format(karliArtisOrani), decimalFormatYuzde.format(netKarDahilKar)));
 
             if (karsizArtisOrani > 0.0) {
                 binding.textViewKarYuzde.setTextColor(Color.GREEN);

@@ -139,6 +139,7 @@
             android:id="@+id/LinearLayoutSatir2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_detay"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -149,7 +150,7 @@
                 android:layout_weight="1"
                 android:text="Toplam Adet"
                 android:textColor="#000000"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textViewAdet"
@@ -163,8 +164,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAlignment="center"
-                android:hint="Yeni adet için tıkla" />
+                android:hint="Yeni adet için tıkla"
+                android:textAlignment="center" />
 
         </LinearLayout>
 
@@ -172,6 +173,7 @@
             android:id="@+id/LinearLayoutSatir3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_detay"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -203,6 +205,7 @@
             android:id="@+id/LinearLayoutSatir4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_detay"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -233,6 +236,7 @@
             android:id="@+id/LinearLayoutSatir5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_detay"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -265,6 +269,7 @@
             android:id="@+id/LinearLayoutSatir6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_detay"
             android:orientation="horizontal"
             android:weightSum="3">
 

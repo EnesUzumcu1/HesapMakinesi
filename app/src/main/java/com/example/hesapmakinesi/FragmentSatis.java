@@ -1,6 +1,5 @@
 package com.example.hesapmakinesi;
 
-import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -99,7 +98,7 @@ public class FragmentSatis extends Fragment implements ClickListener {
             float artisOrani = (float) (((gerceklesirsePara - hamPara) / gerceklesirsePara) * 100);
             float netKar = (float) (gerceklesirsePara - hamPara);
 
-            binding.textViewKarOrani.setText("% " + decimalFormatYuzde.format(artisOrani) + " (" + decimalFormatYuzde.format(netKar) + ")");
+            binding.textViewKarOrani.setText(String.format("%% %s (%s)", decimalFormatYuzde.format(artisOrani), decimalFormatYuzde.format(netKar)));
             if (artisOrani > 0.0) {
                 binding.textViewKarOrani.setTextColor(Color.GREEN);
             } else {
@@ -216,7 +215,7 @@ public class FragmentSatis extends Fragment implements ClickListener {
     }
 
     @Override
-    public void OnItemClicked(Hesap hesap, int position) {
+    public void OnItemClicked(int position) {
         adapter.notifyItemRemoved(position);
         adapter.hesapArrayList.remove(position);
         ortalamaHesapla();
@@ -224,7 +223,7 @@ public class FragmentSatis extends Fragment implements ClickListener {
     }
 
     @Override
-    public void OnItemClickedCoinlerList(Coinler coinler, int position) {
+    public void OnItemClickedCoinlerList(Coinler coinler) {
 
     }
 
